@@ -7,3 +7,6 @@ edition = "2024"
 dodo_core = { path = "../dodo_core" }
 v8 = { workspace = true }
 color-eyre = { workspace = true }
+
+[lints]
+workspace = true
