@@ -1,4 +1,4 @@
-use std::time::{self, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use color_eyre::Result;
 use serde::{Deserialize, Serialize};
