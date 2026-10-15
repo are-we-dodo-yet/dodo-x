@@ -1,4 +1,8 @@
+use std::time::{self, SystemTime, UNIX_EPOCH};
+
 use color_eyre::Result;
+use serde::{Deserialize, Serialize};
+use serde_v8::to_v8;
 use v8::{Context, ContextScope, Function, Global, Local, Object, Script};
 
 use crate::{
@@ -82,6 +86,55 @@ impl Container<'_> {
 
 		Ok(())
 	}
+
+	/// Run a tick of the event loop
+	///
+	/// # Errors
+	/// Throws an error when
+	/// - There is no object key of global called "extensionsRuntimeBridge"
+	/// - there is no function key of extensionsRuntimeBridge called
+	///   "runEventLoopTick"
+	/// - v8 allocation fails
+	/// - The runtime isolate is being borrowed
+	pub fn run_event_loop(&mut self) -> Result<()> {
+		let mut borrowed_isolate = self.runtime.isolate.try_borrow_mut()?;
+		v8::scope_with_context!(scope, &mut *borrowed_isolate, &self.context);
+
+		let context = Local::new(scope, &self.context);
+
+		let global = context.global(scope);
+
+		let js_bridge_holder = context
+			.global(scope)
+			.get(scope, allocate_str!("extensionsRuntimeBridge", scope)?.into());
+		let js_bridge_holder = js_bridge_holder.ok_or(RuntimeError::JSBridgeNotFound)?;
+		let js_bridge_holder = js_bridge_holder.try_cast::<Object>()?;
+
+		let run_event_loop_fn =
+			js_bridge_holder.get(scope, allocate_str!("runEventLoopTick", scope)?.into());
+		let run_event_loop_fn =
+			run_event_loop_fn.ok_or(RuntimeError::JSEventLoopTickFunctionNotFound)?;
+		let run_event_loop_fn = run_event_loop_fn.try_cast::<Function>()?;
+
+		let params = EventLoopUpdateParameters {
+			timestamp_millis: SystemTime::now()
+				.duration_since(UNIX_EPOCH)?
+				.as_millis()
+				.try_into()?,
+		};
+		let params = to_v8(scope, params)?;
+
+		let args = vec![params];
+
+		run_event_loop_fn.call(scope, global.into(), &args);
+
+		Ok(())
+	}
+}
+
+#[derive(Serialize, Deserialize)]
+struct EventLoopUpdateParameters {
+	timestamp_millis: u64,
 }
 
 #[allow(clippy::needless_pass_by_value)] // This requires a very specific signature

@@ -19,4 +19,10 @@ pub enum RuntimeError {
 
 	#[error("There already exists a container with the component ID {0}")]
 	DuplicateComponentId(ComponentId),
+
+	#[error("There is no global called extensionsRuntimeBridge as a key of global")]
+	JSBridgeNotFound,
+
+	#[error("Could not find extensionsRuntimeBridge.runEventLoopTick")]
+	JSEventLoopTickFunctionNotFound,
 }

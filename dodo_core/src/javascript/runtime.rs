@@ -51,6 +51,23 @@ impl<'rt> Runtime<'rt> {
 
 		Ok(container)
 	}
+
+	/// Run a tick of the event loop on every container
+	///
+	/// # Errors
+	/// Throws an error when
+	/// - There is no object key of global called "extensionsRuntimeBridge"
+	/// - There is no function key of extensionsRuntimeBridge called
+	///   "runEventLoopTick"
+	/// - v8 allocation fails
+	/// - A container is being borrowed
+	/// - The runtime isolate is being borrowed
+	pub fn run_event_loop(&self) -> Result<()> {
+		for container in self.containers.borrow().iter() {
+			container.try_borrow_mut()?.run_event_loop()?;
+		}
+		Ok(())
+	}
 }
 
 impl Default for Runtime<'_> {

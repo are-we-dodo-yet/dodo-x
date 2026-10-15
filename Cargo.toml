@@ -3,9 +3,11 @@ resolver = "3"
 members = ["dodo_cli", "dodo_core"]
 
 [workspace.dependencies]
-v8 = { version = "152.2.0" }
+v8 = { version = "150.4.0" } # this is out of date to match with serde_v8
 color-eyre = "0.6.5"
 thiserror = "2.0.21"
+serde_v8 = "0.321.0"
+serde = "1.0.229"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }

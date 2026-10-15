@@ -12,5 +12,7 @@ fn main() -> Result<()> {
 
 	container.borrow_mut().eval(include_str!("test.js"))?;
 
-	Ok(())
+	loop {
+		rt.run_event_loop()?;
+	}
 }
