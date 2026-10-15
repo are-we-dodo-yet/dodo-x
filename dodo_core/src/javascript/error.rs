@@ -16,7 +16,7 @@ pub enum RuntimeError {
 
 	#[error("V8 could not bind a native Rust function as a JavaScript function")]
 	V8FunctionBindingFailed,
-	
+
 	#[error("There already exists a container with the component ID {0}")]
 	DuplicateComponentId(ComponentId),
 }

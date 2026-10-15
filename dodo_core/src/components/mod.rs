@@ -1,7 +1,7 @@
 use std::fmt::{self, Display};
 
 /// Identifies an intra-process communication module
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ComponentId {
 	/// Identifies the singular primary user-thread JavaScript instance, at
 	/// least, until we introduce webworkers
@@ -20,9 +20,9 @@ pub enum ComponentId {
 impl Display for ComponentId {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
-			ComponentId::UserCode => f.write_str("user-defined code"),
-			ComponentId::DodoApi => f.write_str("dodo internal API"),
-			ComponentId::Extension(name) => f.write_str(&format!("extension '{name}'")),
+			Self::UserCode => f.write_str("user-defined code"),
+			Self::DodoApi => f.write_str("dodo internal API"),
+			Self::Extension(name) => f.write_str(&format!("extension '{name}'")),
 		}
 	}
 }

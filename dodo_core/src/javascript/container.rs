@@ -1,7 +1,10 @@
 use color_eyre::Result;
 use v8::{Context, ContextScope, Function, Global, Local, Object, Script};
 
-use crate::{components::ComponentId, javascript::{Runtime, v8::allocate_str}};
+use crate::{
+	components::ComponentId,
+	javascript::{Runtime, v8::allocate_str},
+};
 
 use super::error::RuntimeError;
 
@@ -14,7 +17,7 @@ pub struct Container<'rt> {
 	pub context: Global<Context>,
 
 	/// The component that this container represents
-	pub id: ComponentId
+	pub id: ComponentId,
 }
 
 impl Container<'_> {

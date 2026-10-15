@@ -38,7 +38,11 @@ impl<'rt> Runtime<'rt> {
 
 			let context = Context::new(scope, ContextOptions::default());
 
-			Rc::new(RefCell::new(Container { runtime: self, context: Global::new(scope, context), id }))
+			Rc::new(RefCell::new(Container {
+				runtime: self,
+				context: Global::new(scope, context),
+				id,
+			}))
 		};
 
 		container.borrow_mut().init()?;

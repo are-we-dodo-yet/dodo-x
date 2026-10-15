@@ -1,5 +1,8 @@
 use color_eyre::Result;
-use dodo_core::{components::ComponentId, javascript::{Runtime, setup_v8}};
+use dodo_core::{
+	components::ComponentId,
+	javascript::{Runtime, setup_v8},
+};
 
 fn main() -> Result<()> {
 	setup_v8();
