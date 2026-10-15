@@ -1,0 +1,9 @@
+[package]
+name = "dodo_core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+v8 = { workspace = true }
+color-eyre = { workspace = true }
+thiserror = { workspace = true }

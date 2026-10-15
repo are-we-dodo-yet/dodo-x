@@ -1,0 +1,10 @@
+imports_granularity = "Crate"
+max_width = 100
+reorder_imports = true
+use_small_heuristics = "Max"
+wrap_comments = true
+format_code_in_doc_comments = true
+hard_tabs = true
+newline_style = "Unix"
+normalize_comments = true
+use_field_init_shorthand = true

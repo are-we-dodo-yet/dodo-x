@@ -1,0 +1,9 @@
+[package]
+name = "dodo_cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dodo_core = { path = "../dodo_core" }
+v8 = { workspace = true }
+color-eyre = { workspace = true }
