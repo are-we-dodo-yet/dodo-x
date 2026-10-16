@@ -1,0 +1,6 @@
+{
+	"name": "@are-we-dodo-yet/api",
+	"exports": "./mod.ts",
+	"imports": {
+	}
+}

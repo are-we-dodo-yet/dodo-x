@@ -1,12 +1,13 @@
 {
-    "editor.rulers": [
-        100
-    ],
-    "rust-analyzer.check.command": "clippy",
-    "rust-analyzer.checkOnSave": true,
-    "editor.indentSize": "tabSize",
-    "editor.tabSize": 4,
-    "[rust]": {
-        "editor.defaultFormatter": "rust-lang.rust-analyzer",
-    }
+	"editor.rulers": [
+		100
+	],
+	"rust-analyzer.check.command": "clippy",
+	"rust-analyzer.checkOnSave": true,
+	"editor.indentSize": "tabSize",
+	"editor.tabSize": 4,
+	"[rust]": {
+		"editor.defaultFormatter": "rust-lang.rust-analyzer"
+	},
+	"deno.enable": true
 }

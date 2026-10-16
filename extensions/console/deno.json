@@ -1,0 +1,7 @@
+{
+	"name": "@are-we-dodo-yet/extension-console",
+	"exports": "./mod.ts",
+	"tasks": {
+		"make": "deno run -A @are-we-dodo-yet/sdk make"
+	}
+}

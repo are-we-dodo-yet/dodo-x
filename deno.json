@@ -1,0 +1,12 @@
+{
+	"workspace": ["./packages/sdk", "./extensions/console", "./packages/api"],
+	"fmt": {
+		"useTabs": true,
+		"indentWidth": 4,
+		"semiColons": false,
+		"newLineKind": "lf"
+	},
+	"tasks": {
+		"dev": "deno fmt --watch --no-clear-screen & deno lint --fix --watch --no-clear-screen & deno test -A --watch --no-clear-screen"
+	}
+}

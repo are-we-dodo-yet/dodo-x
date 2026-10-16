@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["dodo_cli", "dodo_core"]
+members = ["crates/dodo_cli", "crates/dodo_core"]
 
 [workspace.dependencies]
 v8 = { version = "150.4.0" } # this is out of date to match with serde_v8

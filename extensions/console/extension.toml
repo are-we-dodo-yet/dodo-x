@@ -1,0 +1,4 @@
+name = "Console"
+description = "Provides the console.* APIs."
+prelude = "prelude.ts"
+component = "component.ts"
