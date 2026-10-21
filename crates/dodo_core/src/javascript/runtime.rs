@@ -1,9 +1,9 @@
 use std::{cell::RefCell, rc::Rc};
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 use v8::{Context, ContextOptions, CreateParams, Global, Isolate, OwnedIsolate};
 
-use crate::{components::ComponentId, javascript::RuntimeError};
+use crate::{components::ComponentId, extensions::ExtensionPayload};
 
 use super::Container;
 
@@ -11,6 +11,7 @@ use super::Container;
 pub struct Runtime<'rt> {
 	pub(crate) isolate: RefCell<OwnedIsolate>,
 	pub(crate) containers: RefCell<Vec<Rc<RefCell<Container<'rt>>>>>,
+	pub(crate) extensions: RefCell<Vec<ExtensionPayload>>,
 }
 
 impl<'rt> Runtime<'rt> {
@@ -19,7 +20,11 @@ impl<'rt> Runtime<'rt> {
 	pub fn new() -> Self {
 		let isolate = Isolate::new(CreateParams::default());
 
-		Self { isolate: RefCell::new(isolate), containers: RefCell::new(Vec::new()) }
+		Self {
+			isolate: RefCell::new(isolate),
+			containers: RefCell::new(Vec::new()),
+			extensions: RefCell::new(Vec::new()),
+		}
 	}
 
 	/// Creates and retains a JavaScript container associated with this runtime.
@@ -29,7 +34,7 @@ impl<'rt> Runtime<'rt> {
 	/// Errors upon isolate overborrowing
 	pub fn add_container(&'rt self, id: ComponentId) -> Result<Rc<RefCell<Container<'rt>>>> {
 		if self.containers.borrow().iter().any(|x| x.borrow().id == id) {
-			return Err(RuntimeError::DuplicateComponentId(id).into());
+			return Err(eyre!("There already exists a component with the id {id}"));
 		}
 
 		let container = {
@@ -66,6 +71,20 @@ impl<'rt> Runtime<'rt> {
 		for container in self.containers.borrow().iter() {
 			container.try_borrow_mut()?.run_event_loop()?;
 		}
+		Ok(())
+	}
+
+	/// # Errors
+	/// Throws an error when
+	/// - Container fails to initalize
+	pub fn load_extension(&'rt self, ext: ExtensionPayload) -> Result<()> {
+		// Spin up the component
+		let container = self.add_container(ComponentId::Extension(ext.config.name.clone()))?;
+
+		container.borrow_mut().eval(&ext.component)?;
+
+		self.extensions.borrow_mut().push(ext);
+
 		Ok(())
 	}
 }

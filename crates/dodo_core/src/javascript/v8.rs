@@ -13,7 +13,7 @@ pub fn setup_v8() {
 macro_rules! allocate_str {
 	($string: expr, $scope: expr) => {
 		v8::String::new($scope, $string)
-			.ok_or(crate::javascript::error::RuntimeError::V8AllocationFailed)
+			.ok_or_else(|| color_eyre::eyre::eyre!("V8 failed to allocate a string"))
 	};
 }
 

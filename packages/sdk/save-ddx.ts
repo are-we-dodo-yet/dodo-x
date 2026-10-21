@@ -4,6 +4,7 @@ import { resolve } from "@std/path"
 export interface DDXFile {
 	name: string
 	description: string
+	id: string
 	prelude: Uint8Array
 	component: Uint8Array
 }
@@ -15,6 +16,7 @@ export async function saveDDX(ddxFile: DDXFile, path: string) {
 			JSON.stringify({
 				name: ddxFile.name,
 				description: ddxFile.description,
+				id: ddxFile.id,
 			}),
 		),
 		toTarStreamFile("prelude.js", ddxFile.prelude),

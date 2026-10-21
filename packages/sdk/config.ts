@@ -15,6 +15,12 @@ export const ConfigSchema = v.object({
 	component: v.string(
 		"Component must be a path to the script which will run in a specially-priviledged realm outside of user-code.",
 	),
+	owner_email: v.pipe(
+		v.string("Owner email must be a string"),
+		v.email(
+			"Owner email must be a valid email address (in a common format)",
+		),
+	),
 })
 
 export async function loadConfig(

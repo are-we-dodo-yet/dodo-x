@@ -2,6 +2,6 @@
 	"name": "@are-we-dodo-yet/extension-console",
 	"exports": "./mod.ts",
 	"tasks": {
-		"make": "deno run -A @are-we-dodo-yet/sdk make"
+		"make": "deno run -A @are-we-dodo-yet/sdk make -o ../../crates/dodo_cli/bundled_exts/console.ddx"
 	}
 }

@@ -1,6 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::OptionExt};
 use serde::{Deserialize, Serialize};
 use serde_v8::to_v8;
 use v8::{Context, ContextScope, Function, Global, Local, Object, Script};
@@ -9,8 +9,6 @@ use crate::{
 	components::ComponentId,
 	javascript::{Runtime, v8::allocate_str},
 };
-
-use super::error::RuntimeError;
 
 /// A JavaScript execution context owned by a [`super::Runtime`].
 pub struct Container<'rt> {
@@ -44,19 +42,10 @@ impl Container<'_> {
 
 		// Compile the script
 		let script = Script::compile(scope, code, None);
-		let script = script.ok_or(RuntimeError::V8CompilationFailed)?;
+		let script = script.ok_or_eyre("V8 failed to compile a script")?;
 
 		// Run the script
-		if let Some(val) = script.run(scope) {
-			println!(
-				"{}",
-				val.to_string(scope)
-					.ok_or(RuntimeError::V8ToStringFailed)?
-					.to_rust_string_lossy(scope)
-			);
-		} else {
-			println!("Script returned nothing.");
-		}
+		script.run(scope).ok_or_eyre("Failed to run script")?;
 
 		Ok(())
 	}
@@ -74,7 +63,7 @@ impl Container<'_> {
 
 		let post_message_js_func = Function::builder(rt_post_message_impl).build(scope);
 
-		let send_message = post_message_js_func.ok_or(RuntimeError::V8FunctionBindingFailed)?;
+		let send_message = post_message_js_func.ok_or_eyre("V8 failed to bind a function.")?;
 
 		api_object.set(scope, allocate_str!("postMessage", scope)?.into(), send_message.into());
 
@@ -104,16 +93,16 @@ impl Container<'_> {
 
 		let global = context.global(scope);
 
-		let js_bridge_holder = context
-			.global(scope)
-			.get(scope, allocate_str!("extensionsRuntimeBridge", scope)?.into());
-		let js_bridge_holder = js_bridge_holder.ok_or(RuntimeError::JSBridgeNotFound)?;
+		let js_bridge_holder =
+			global.get(scope, allocate_str!("extensionsRuntimeBridge", scope)?.into());
+		let js_bridge_holder =
+			js_bridge_holder.ok_or_eyre("V8 failed to get the key extensionsRuntimeBridge")?;
 		let js_bridge_holder = js_bridge_holder.try_cast::<Object>()?;
 
 		let run_event_loop_fn =
 			js_bridge_holder.get(scope, allocate_str!("runEventLoopTick", scope)?.into());
-		let run_event_loop_fn =
-			run_event_loop_fn.ok_or(RuntimeError::JSEventLoopTickFunctionNotFound)?;
+		let run_event_loop_fn = run_event_loop_fn
+			.ok_or_eyre("V8 failed to get extensionsRuntimeBridge.runEventLoopTick.")?;
 		let run_event_loop_fn = run_event_loop_fn.try_cast::<Function>()?;
 
 		let params = EventLoopUpdateParameters {
@@ -127,6 +116,20 @@ impl Container<'_> {
 		let args = vec![params];
 
 		run_event_loop_fn.call(scope, global.into(), &args);
+
+		Ok(())
+	}
+
+	/// # Errors
+	/// This errors out upon
+	/// - Evaluation failure
+	pub fn load_prelude(&mut self) -> Result<()> {
+		let prelude: String =
+			self.runtime.extensions.borrow().iter().map(|it| it.prelude.clone()).collect();
+
+		self.eval(&prelude)?;
+
+		dbg!(&prelude);
 
 		Ok(())
 	}

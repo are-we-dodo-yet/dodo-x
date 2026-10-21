@@ -1,2 +1,2 @@
-$env.RUST_BACKTRACE = "1";
+$env.RUST_BACKTRACE = "full";
 bacon run

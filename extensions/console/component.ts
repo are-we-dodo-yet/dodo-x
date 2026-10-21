@@ -1,3 +1,3 @@
-import { assertNotNull } from "@are-we-dodo-yet/api"
+import { installEventLoop } from "@are-we-dodo-yet/api"
 
-assertNotNull(123)
+installEventLoop()

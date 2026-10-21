@@ -34,6 +34,7 @@ async function make(options: { config: string; outputFile: string }) {
 		description: config.description,
 		prelude,
 		component,
+		id: makeSafe(`${config.owner_email}___${config.name}`),
 	}, options.outputFile)
 
 	console.log(
@@ -44,4 +45,8 @@ async function make(options: { config: string; outputFile: string }) {
 
 if (import.meta.main) {
 	await main()
+}
+
+function makeSafe(str: string): string {
+	return str.replaceAll(/[^a-zA-Z]/g, "_")
 }

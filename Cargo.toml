@@ -8,6 +8,9 @@ color-eyre = "0.6.5"
 thiserror = "2.0.21"
 serde_v8 = "0.321.0"
 serde = "1.0.229"
+tar = "0.4.46"
+serde_json = "1.0.154"
+log = "0.4.34"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }
